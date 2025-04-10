@@ -1,19 +1,12 @@
-package com.example.sample.controller;
+package com.example.demo.controller;
 
-import com.example.sample.entity.DataEntry;
-import com.example.sample.entity.User;
-import com.example.sample.repository.repo;
-import com.example.sample.service.UserService;
-import org.bson.types.ObjectId;
+import com.example.demo.entity.User;
+import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/user")
@@ -29,16 +22,18 @@ public class UserController {
 
     @PostMapping
     public  void create(@RequestBody User user){
-        userService.save(user);
+        userService.saveEntry(user);
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody User user){
-        User userInDb = userService.findByUserName(user.getUserName());
+    @PutMapping("/{userName}")
+    public ResponseEntity<?> updateUser(@RequestBody User user,@PathVariable String userName){
+        User userInDb = userService.findByUserName(userName);
         if (userInDb !=null){
             userInDb.setUserName(user.getUserName());
-            userInDb.setUserName(user.getPassword());
-            userService.save(userInDb);
+            userInDb.setPassword(user.getPassword());
+            userService.saveEntry(userInDb);
+            return new ResponseEntity<>(HttpStatus.OK);
+
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
