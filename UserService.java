@@ -1,9 +1,7 @@
-package com.example.sample.service;
+package com.example.demo.services;
 
-import com.example.sample.entity.DataEntry;
-import com.example.sample.entity.User;
-import com.example.sample.repository.UserRepo;
-import com.example.sample.repository.repo;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +15,7 @@ public class UserService {
     @Autowired
     private UserRepo UserRepository;
 
-    public void save(User dataEntry){
+    public void saveEntry(User dataEntry){
         UserRepository.save(dataEntry);
     }
 
@@ -26,7 +24,7 @@ public class UserService {
     }
 
     public Optional<User> findById(ObjectId id){
-        return  UserRepository.findById(id);
+        return UserRepository.findById(id);
     }
 
     public  void delete(ObjectId id){
@@ -36,5 +34,6 @@ public class UserService {
     public User findByUserName(String userName){
         return UserRepository.findByUserName(userName);
     }
+
     //controller ----> service ----> repository
 }
