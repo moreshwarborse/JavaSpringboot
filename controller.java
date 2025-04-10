@@ -1,7 +1,9 @@
-package com.example.sample.controller;
+package com.example.demo.controller;
 
-import com.example.sample.entity.DataEntry;
-import com.example.sample.repository.repo;
+import com.example.demo.entity.DataEntry;
+import com.example.demo.entity.User;
+import com.example.demo.services.UserService;
+import com.example.demo.services.service;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,28 +18,30 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/con")
-public class controller {
+public class Controller {
 
-    //    public  Map<Long, DataEntry> Entry= new HashMap<>();
+//    public  Map<Long, DataEntry> Entry= new HashMap<>();
     @Autowired
+    private service serve;
 
-    private repo repository;
+    @Autowired
+    private UserService userService;
 
 
-    @GetMapping//("/get")
-    public ResponseEntity<?>getAll(){
-        List<DataEntry> all=repository.findAll();
-        if(all != null && !all.isEmpty()){
+    @GetMapping("/userName")
+    public ResponseEntity<?>getAllDataEntries(@PathVariable String userName){
+        User user= userService.findByUserName(userName);
+        List<DataEntry> all=user.getEntries();
+        if((all != null) && !all.isEmpty()){
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping//("/post")
-    public ResponseEntity<DataEntry> post(@RequestBody DataEntry entry){
+    @PostMapping("/{userName}")
+    public ResponseEntity<DataEntry> post(@RequestBody DataEntry entry,@PathVariable String userName){
         try {
-            entry.setDate(LocalDateTime.now());
-            repository.save(entry);
+            serve.saveEntry(entry,userName);
             return new ResponseEntity<>(entry, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -47,27 +51,28 @@ public class controller {
 
     @GetMapping("id/{myID}")
     public ResponseEntity<DataEntry> getId(@PathVariable ObjectId myID){
-        Optional<DataEntry> entry= repository.findById(myID);
-        if(entry.isPresent()){
-            return new ResponseEntity<>(entry.get(), HttpStatus.OK);
-        }return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         Optional<DataEntry> entry= serve.findById(myID);
+         if(entry.isPresent()){
+             return new ResponseEntity<>(entry.get(), HttpStatus.OK);
+         }return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    @DeleteMapping("id/{myId}")
-    public ResponseEntity<?>delete(@PathVariable ObjectId myId) {
-        repository.deleteById(myId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("id/{userName}/{myId}")
+    public ResponseEntity<?>delete(@PathVariable String userName,@PathVariable ObjectId myId) {
+       serve.deleteEntry(myId,userName );
+       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("id/{id}")
-    public ResponseEntity<DataEntry> put(@PathVariable ObjectId id,@RequestBody DataEntry entry){
-        DataEntry oldEntry= repository.findById(id).orElse(null);
+    public ResponseEntity<DataEntry> put(@PathVariable ObjectId id,
+                                         @RequestBody DataEntry entry){
+        DataEntry oldEntry= serve.findById(id).orElse(null);
         if(oldEntry!=null){
             oldEntry.setName(entry.getName());
             oldEntry.setAddress(entry.getAddress());
-            repository.save(oldEntry);
+            serve.saveEntry(oldEntry);
             return new ResponseEntity<>(oldEntry,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-}}
+    }
+}
