@@ -1,17 +1,14 @@
-package com.example.sample.entity;
+package com.example.demo.entity;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
 
 @Document(collection = "data_entries")
 @Data
+@NoArgsConstructor
 public class DataEntry {
 
     @Id
@@ -20,9 +17,4 @@ public class DataEntry {
     private String name;
     private String Address;
     private LocalDateTime date;
-
-
-
 }
-
-
